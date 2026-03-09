@@ -425,7 +425,7 @@
 <body>
 <div class="container">
   <header>
-    <h1>Sınav Hazırla</h1>
+    <h1>Sınav Hazırla <span style="font-size:0.55em; opacity:0.5; font-weight:400;">V2.0</span></h1>
     <p>Fotoğrafları seç ve sınavını hazırla</p>
   </header>
 
@@ -470,7 +470,7 @@
     <div id="statsBar" class="stats-bar" style="display:none;">
       <span>📸 <strong id="photoCount">0</strong> fotoğraf</span>
       <span>📄 Tahminen <strong id="pageCount">~</strong> sayfa</span>
-      <span style="margin-left:auto; font-size:0.78rem; opacity:0.6;">▲▼ ile sıralayın</span>
+      <button onclick="shufflePhotos()" style="margin-left:auto; background:none; border:1px solid var(--border); color:var(--text); border-radius:8px; padding:5px 12px; font-size:0.8rem; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🔀 Karıştır</button>
     </div>
   </div>
 
@@ -598,6 +598,33 @@
         <label>Sayfa kenar boşluğu (mm)</label>
         <input type="range" id="marginSlider" min="5" max="30" value="5">
         <div class="range-display" id="marginVal">5 mm</div>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="form-row">
+      <div class="toggle-row">
+        <span>Fotoğrafları belirli sayıda sayfaya sığdır</span>
+        <label class="toggle">
+          <input type="checkbox" id="fitPagesEnabled" onchange="toggleFitPages()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div id="fitPagesOptions" style="opacity:0.4; pointer-events:none; margin-top:12px;">
+      <div class="form-row">
+        <label>Hedef sayfa sayısı</label>
+        <div class="style-btns">
+          <button class="style-btn" id="fitPage1" onclick="selectFitPages(1)">1</button>
+          <button class="style-btn active" id="fitPage2" onclick="selectFitPages(2)">2</button>
+          <button class="style-btn" id="fitPage3" onclick="selectFitPages(3)">3</button>
+          <button class="style-btn" id="fitPage4" onclick="selectFitPages(4)">4</button>
+          <button class="style-btn" id="fitPage5" onclick="selectFitPages(5)">5</button>
+          <button class="style-btn" id="fitPage6" onclick="selectFitPages(6)">6</button>
+          <button class="style-btn" id="fitPage7" onclick="selectFitPages(7)">7</button>
+          <button class="style-btn" id="fitPage8" onclick="selectFitPages(8)">8</button>
+        </div>
       </div>
     </div>
   </div>
@@ -740,6 +767,19 @@ document.getElementById('marginSlider').addEventListener('input', function() {
   updateStats();
 });
 
+let fitPagesTarget = 2;
+
+function toggleFitPages() {
+  const enabled = document.getElementById('fitPagesEnabled').checked;
+  document.getElementById('fitPagesOptions').style.opacity = enabled ? '1' : '0.4';
+  document.getElementById('fitPagesOptions').style.pointerEvents = enabled ? '' : 'none';
+}
+
+function selectFitPages(n) {
+  fitPagesTarget = n;
+  [1,2,3,4,5,6,7,8].forEach(i => document.getElementById('fitPage'+i).classList.toggle('active', i === n));
+}
+
 function toggleBorderOptions() {
   const enabled = document.getElementById('borderEnabled').checked;
   document.getElementById('borderOptions').style.opacity = enabled ? '1' : '0.4';
@@ -880,6 +920,14 @@ function handleFiles(fileList) {
     };
     reader.readAsDataURL(file);
   });
+}
+
+function shufflePhotos() {
+  for (let i = photos.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [photos[i], photos[j]] = [photos[j], photos[i]];
+  }
+  renderList();
 }
 
 function movePhoto(idx, dir) {
@@ -1221,6 +1269,29 @@ async function generatePDF() {
   let colY = Array(numCols).fill(startY);
   let col = 0;
 
+  // Sayfaya sığdır modu: fotoğraf yüksekliğini hesapla
+  const fitEnabled = document.getElementById('fitPagesEnabled').checked;
+  let fixedImgH = null;
+  if (fitEnabled && photos.length > 0) {
+    const targetPages = fitPagesTarget;
+    const usablePageH = pageH - margin;
+    const firstPageH = usablePageH - startY;
+    const otherPageH = usablePageH - margin;
+    // Toplam sütun slotu
+    const firstPageSlots = numCols;
+    const otherPageSlots = numCols * (targetPages - 1);
+    const totalSlots = firstPageSlots + otherPageSlots;
+    const photosPerSlot = Math.ceil(photos.length / totalSlots);
+    // İlk sayfada her sütuna kaç fotoğraf düşer
+    const photosPerCol = Math.ceil(photos.length / (numCols * targetPages));
+    const labelH = labelEnabled ? labelLineH : 0;
+    const padV = borderEnabled ? borderPadV : 0;
+    // Kullanılabilir yükseklik / fotoğraf başına düşen alan
+    const availH = (firstPageH - gap * (photosPerCol - 1)) / photosPerCol;
+    fixedImgH = availH - labelH - padV * 2;
+    if (fixedImgH < 5) fixedImgH = 5;
+  }
+
   for (let i = 0; i < photos.length; i++) {
     progressLabel.textContent = `Fotoğraf ${i+1} / ${photos.length} işleniyor...`;
     progressFill.style.width = ((i / photos.length) * 90) + '%';
@@ -1229,11 +1300,25 @@ async function generatePDF() {
 
     const imgInfo = await getImageDimensions(photo.dataUrl);
     const ratio = imgInfo.height / imgInfo.width;
-    // Border padding affects available image width
     const padH = borderEnabled ? borderPadH : 0;
     const padV = borderEnabled ? borderPadV : 0;
-    const imgW = colW - padH * 2;
-    const imgH = imgW * ratio;
+    const maxImgW = colW - padH * 2;
+
+    let imgW, imgH;
+    if (fixedImgH !== null) {
+      // Sayfaya sığdır modu: yüksekliğe göre genişliği orana göre hesapla
+      imgH = fixedImgH;
+      imgW = imgH / ratio;
+      // Sütun genişliğini aşıyorsa sütuna sığdır
+      if (imgW > maxImgW) {
+        imgW = maxImgW;
+        imgH = imgW * ratio;
+      }
+    } else {
+      imgW = maxImgW;
+      imgH = imgW * ratio;
+    }
+
     const labelH = labelEnabled ? labelLineH : 0;
     const totalBlockH = imgH + labelH + padV * 2;
 
