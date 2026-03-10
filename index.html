@@ -985,17 +985,27 @@ function compressImage(dataUrl) {
 
 function handleFiles(fileList) {
   const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
-  let loaded = 0;
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = async e => {
-      const compressed = await compressImage(e.target.result);
-      photos.push({ id: Date.now() + Math.random(), file, dataUrl: compressed, name: file.name, points: 10 });
-      loaded++;
-      if (loaded === files.length) renderList();
-    };
-    reader.readAsDataURL(file);
-  });
+  if (files.length === 0) return;
+
+  // Sırayla işle — ana thread'i kilitlemez
+  async function processSequentially() {
+    for (const file of files) {
+      await new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = async e => {
+          const compressed = await compressImage(e.target.result);
+          photos.push({ id: Date.now() + Math.random(), file, dataUrl: compressed, name: file.name, points: 10 });
+          renderList(); // her fotoğraftan sonra güncelle
+          resolve();
+        };
+        reader.readAsDataURL(file);
+      });
+      // Tarayıcıya nefes aldır
+      await new Promise(r => setTimeout(r, 10));
+    }
+  }
+
+  processSequentially();
 }
 
 function clearAllPhotos() {
