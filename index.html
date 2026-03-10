@@ -1452,7 +1452,7 @@ async function generatePDF() {
       const pts = photo.points ?? 0;
       const labelText = `SORU ${qNum}   (${pts} Puan)`;
       const labelColor = hexToRgbStr(labelColorHex);
-      drawTextLine(labelText, imgX, yPos, labelFontSize, labelColor, labelBold, labelItalic);
+      drawTextLine(labelText, xPos + padH, yPos, labelFontSize, labelColor, labelBold, labelItalic);
       yPos += labelLineH;
     }
 
