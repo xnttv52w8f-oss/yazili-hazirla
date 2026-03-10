@@ -425,7 +425,7 @@
 <body>
 <div class="container">
   <header>
-    <h1>Sınav Hazırla <span style="font-size:0.55em; opacity:0.5; font-weight:400;">V2.0.01</span></h1>
+    <h1>Sınav Hazırla <span style="font-size:0.55em; opacity:0.5; font-weight:400;">V2.0</span></h1>
     <p>Fotoğrafları seç ve sınavını hazırla</p>
   </header>
 
@@ -598,6 +598,14 @@
         <label>Sayfa kenar boşluğu (mm)</label>
         <input type="range" id="marginSlider" min="5" max="30" value="5">
         <div class="range-display" id="marginVal">5 mm</div>
+      </div>
+    </div>
+    <div class="form-row" style="margin-top:12px;">
+      <label>Fotoğraf hizalama (sütun içinde)</label>
+      <div class="style-btns">
+        <button class="style-btn active" id="alignLeft" onclick="selectAlign('left')">← Sola</button>
+        <button class="style-btn" id="alignCenter" onclick="selectAlign('center')">↔ Ortala</button>
+        <button class="style-btn" id="alignRight" onclick="selectAlign('right')">→ Sağa</button>
       </div>
     </div>
 
@@ -778,6 +786,13 @@ function toggleFitPages() {
 function selectFitPages(n) {
   fitPagesTarget = n;
   [1,2,3,4,5,6,7,8].forEach(i => document.getElementById('fitPage'+i).classList.toggle('active', i === n));
+}
+
+let photoAlign = 'left';
+
+function selectAlign(val) {
+  photoAlign = val;
+  ['left','center','right'].forEach(a => document.getElementById('align'+a.charAt(0).toUpperCase()+a.slice(1)).classList.toggle('active', a === val));
 }
 
 function toggleBorderOptions() {
@@ -1340,14 +1355,18 @@ async function generatePDF() {
     const xPos = margin + col * (colW + gap);
     let yPos = colY[col];
 
-    // Yuvarlatılmış çerçeve — içerik çizilmeden önce arka plan
+    // Hizalama ofseti (sadece fotoğraf için, çerçeve sütun genişliğinde sabit)
+    let alignOffsetX = 0;
+    if (photoAlign === 'center') alignOffsetX = (colW - imgW - padH * 2) / 2;
+    else if (photoAlign === 'right') alignOffsetX = colW - imgW - padH * 2;
+
+    // Yuvarlatılmış çerçeve — her zaman tam sütun genişliğinde
     if (borderEnabled) {
       drawRoundedRect(xPos, yPos, colW, totalBlockH, borderRadius);
     }
 
-    // İç dolgu uygula
     yPos += padV;
-    const imgX = xPos + padH;
+    const imgX = xPos + padH + alignOffsetX;
 
     // Draw label
     if (labelEnabled) {
