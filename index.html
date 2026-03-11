@@ -152,6 +152,27 @@
   }
   input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
 
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    padding: 8px 36px 8px 14px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+  select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(56,189,248,0.1); }
+  select option { background: var(--surface); color: var(--text); }
+
   .form-row { margin-bottom: 18px; }
   .form-row:last-child { margin-bottom: 0; }
 
@@ -471,7 +492,7 @@
 
 <div class="container">
     <header>
-      <h1>HızlıSınav <span style="font-size:0.55em; opacity:0.5; font-weight:400;">V3.0</span></h1>
+      <h1>HızlıSınav <span style="font-size:0.38em; opacity:0.5; font-weight:400;">V3.1</span></h1>
       <p>Fotoğrafları seç ve sınavını hazırla</p>
     </header>
 
@@ -483,6 +504,15 @@
       <select id="orderMode">
         <option value="custom">Özel sıra (▲▼ ile ayarla)</option>
         <option value="original">Yükleme sırası</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Yükleme kalitesi</label>
+      <select id="uploadQuality">
+        <option value="low">Düşük — hızlı, az yer (mobil önerilir)</option>
+        <option value="medium" selected>Orta — dengeli</option>
+        <option value="high">Yüksek — net, büyük dosya</option>
+        <option value="original">Orijinal — sıkıştırma yok</option>
       </select>
     </div>
     <div class="upload-zone" id="dropZone">
@@ -549,7 +579,7 @@
     <div class="three-col">
       <div class="form-row">
         <label>Yazı boyutu (pt)</label>
-        <input type="number" id="descSize" value="8" min="6" max="48">
+        <input type="number" id="descSize" value="12" min="6" max="48">
       </div>
       <div class="form-row">
         <label>Renk</label>
@@ -570,7 +600,7 @@
     <div class="three-col">
       <div class="form-row">
         <label>AD SOYAD / NO yazı boyutu (pt)</label>
-        <input type="number" id="studentSize" value="10" min="6" max="20">
+        <input type="number" id="studentSize" value="12" min="6" max="20">
       </div>
       <div class="form-row">
         <label>Renk</label>
@@ -685,11 +715,11 @@
         </div>
         <div class="form-row">
           <label>Yazı boyutu (pt)</label>
-          <input type="number" id="labelSize" value="9" min="6" max="36" oninput="updatePreview()">
+          <input type="number" id="labelSize" value="12" min="6" max="36" oninput="updatePreview()">
         </div>
         <div class="form-row">
           <label>Renk</label>
-          <div class="color-row"><input type="color" id="labelColor" value="#cc2222" oninput="updatePreview()"></div>
+          <div class="color-row"><input type="color" id="labelColor" value="#003580" oninput="updatePreview()"></div>
         </div>
       </div>
       <div class="form-row">
@@ -719,11 +749,11 @@
       <div class="three-col" style="margin-top:14px;">
         <div class="form-row">
           <label>Çizgi kalınlığı (pt)</label>
-          <input type="number" id="borderWidth" value="1" min="0.5" max="5" step="0.5">
+          <input type="number" id="borderWidth" value="2" min="0.5" max="5" step="0.5">
         </div>
         <div class="form-row">
           <label>Çerçeve rengi</label>
-          <div class="color-row"><input type="color" id="borderColor" value="#cccccc"></div>
+          <div class="color-row"><input type="color" id="borderColor" value="#000000"></div>
         </div>
         <div class="form-row">
           <label>Köşe yuvarlaklığı (mm)</label>
@@ -786,7 +816,23 @@ function setTheme(cls, btn, name, color) {
   if (name) document.getElementById('themeActiveName').textContent = name;
   if (color) document.getElementById('themeActiveDot').style.background = color;
   document.getElementById('themeMenu').style.display = 'none';
+  localStorage.setItem('selectedTheme', JSON.stringify({ cls, name, color }));
 }
+
+// Kayıtlı temayı yükle
+(function() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('selectedTheme'));
+    if (!saved) return;
+    document.body.className = saved.cls;
+    if (saved.name) document.getElementById('themeActiveName').textContent = saved.name;
+    if (saved.color) document.getElementById('themeActiveDot').style.background = saved.color;
+    document.querySelectorAll('.theme-menu-item').forEach(btn => {
+      if (btn.textContent.trim().includes(saved.name)) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+  } catch(e) {}
+})();
 
 // Orientation & columns
 let currentOrientation = 'portrait';
@@ -963,12 +1009,21 @@ dropZone.addEventListener('drop', e => {
   handleFiles(e.dataTransfer.files);
 });
 
-// Fotoğrafı sıkıştır: max 1200px, %80 JPEG kalitesi
+// Fotoğrafı sıkıştır — kalite ayarına göre
 function compressImage(dataUrl) {
   return new Promise(resolve => {
+    const quality = document.getElementById('uploadQuality')?.value || 'medium';
+    if (quality === 'original') { resolve(dataUrl); return; }
+
+    const presets = {
+      low:    { max: 900,  q: 0.65 },
+      medium: { max: 1200, q: 0.82 },
+      high:   { max: 1800, q: 0.93 },
+    };
+    const { max: MAX, q } = presets[quality];
+
     const img = new Image();
     img.onload = () => {
-      const MAX = 1200;
       let w = img.width, h = img.height;
       if (w > MAX || h > MAX) {
         if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
@@ -976,9 +1031,8 @@ function compressImage(dataUrl) {
       }
       const canvas = document.createElement('canvas');
       canvas.width = w; canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL('image/jpeg', 0.82));
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', q));
     };
     img.src = dataUrl;
   });
