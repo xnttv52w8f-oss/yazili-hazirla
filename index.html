@@ -440,7 +440,6 @@
     margin: 18px 0;
   }
 
-  /* Theme switcher — moved to top bar, styles defined above */
   .theme-menu-item {
     display: flex; align-items: center; gap: 8px;
     width: 100%; padding: 7px 10px; border: none;
@@ -492,20 +491,13 @@
 
 <div class="container">
     <header>
-      <h1>HızlıSınav <span style="font-size:0.38em; opacity:0.5; font-weight:400;">V3.4 <span style="background:var(--accent); color:#fff; border-radius:4px; padding:1px 4px; font-size:0.7em; opacity:1; font-weight:700; letter-spacing:0.3px; font-family:Arial, sans-serif; font-style:normal;">beta</span></span></h1>
+      <h1>HızlıSınav <span style="font-size:0.38em; opacity:0.5; font-weight:400;">V4.0 <span style="background:var(--accent); color:#fff; border-radius:4px; padding:1px 4px; font-size:0.7em; opacity:1; font-weight:700; letter-spacing:0.3px; font-family:Arial, sans-serif; font-style:normal;">pro</span></span></h1>
       <p>Fotoğrafları seç ve sınavını hazırla</p>
     </header>
 
   <!-- Sorular -->
   <div class="card">
     <div class="card-title">Sorular</div>
-    <div class="form-row">
-      <label>Soru sıralaması</label>
-      <select id="orderMode">
-        <option value="custom">Özel sıra (▲▼ ile ayarla)</option>
-        <option value="original">Yükleme sırası</option>
-      </select>
-    </div>
     <div class="form-row">
       <label>Yükleme kalitesi</label>
       <select id="uploadQuality">
@@ -536,7 +528,7 @@
   <div class="card">
     <div class="card-title">Belge Bilgileri</div>
 
-    <!-- Başlık -->
+    <!-- 1. Başlık -->
     <div class="form-row">
       <label>Başlık metni</label>
       <textarea id="docTitle" rows="2" placeholder="Belgenin başlığını girin..."></textarea>
@@ -563,12 +555,41 @@
         </div>
       </div>
     </div>
+    <div class="form-row">
+      <label>Hizalama</label>
+      <div class="style-btns">
+        <button class="style-btn" id="titleAlignLeft" onclick="setTitleAlign('left')">← Sola</button>
+        <button class="style-btn active" id="titleAlignCenter" onclick="setTitleAlign('center')">↔ Orta</button>
+        <button class="style-btn" id="titleAlignRight" onclick="setTitleAlign('right')">→ Sağa</button>
+      </div>
+    </div>
 
     <hr class="section-divider">
 
-    <!-- Açıklama -->
+    <!-- 2. AD SOYAD / SINIF / NO -->
+    <div class="three-col">
+      <div class="form-row">
+        <label>AD SOYAD / NO yazı boyutu (pt)</label>
+        <input type="number" id="studentSize" value="12" min="6" max="20">
+      </div>
+      <div class="form-row">
+        <label>Renk</label>
+        <div class="color-row"><input type="color" id="studentColor" value="#1a1a1a"></div>
+      </div>
+      <div class="form-row">
+        <label>Stil</label>
+        <div class="style-btns">
+          <button class="style-btn bold-btn active" id="studentBold" onclick="toggleStyle('studentBold')">K</button>
+          <button class="style-btn italic-btn" id="studentItalic" onclick="toggleStyle('studentItalic')">İ</button>
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- 3. İlk Sayfa Açıklama Metni -->
     <div class="form-row">
-      <label>Açıklama metni</label>
+      <label>İlk Sayfa Açıklama Metni</label>
       <textarea id="docDesc" rows="3" placeholder="Kısa bir açıklama yazın..."></textarea>
     </div>
     <div class="archive-row">
@@ -593,29 +614,94 @@
         </div>
       </div>
     </div>
+    <div class="form-row">
+      <label>Hizalama</label>
+      <div class="style-btns">
+        <button class="style-btn active" id="descAlignLeft" onclick="setDescAlign('left')">← Sola</button>
+        <button class="style-btn" id="descAlignCenter" onclick="setDescAlign('center')">↔ Orta</button>
+        <button class="style-btn" id="descAlignRight" onclick="setDescAlign('right')">→ Sağa</button>
+      </div>
+    </div>
 
     <hr class="section-divider">
 
-    <!-- AD SOYAD / SINIF / NO yazı boyutu -->
+    <!-- 4. Son Sayfa Açıklama Metni -->
+    <div class="form-row">
+      <label>Son Sayfa Açıklama Metni</label>
+      <textarea id="footerText" rows="2" placeholder="Örn: Başarılar dileriz. — Fen Bilimleri Zümresi"></textarea>
+    </div>
+    <div class="archive-row">
+      <button class="archive-save-btn" onclick="archiveSaveFooter()">＋ Arşive Kaydet</button>
+      <span style="font-size:0.78rem; color:var(--muted);">Kaydettikleriniz aşağıda listelenir</span>
+    </div>
+    <div id="footerArchive" class="title-archive"></div>
     <div class="three-col">
       <div class="form-row">
-        <label>AD SOYAD / NO yazı boyutu (pt)</label>
-        <input type="number" id="studentSize" value="12" min="6" max="20">
+        <label>Yazı boyutu (pt)</label>
+        <input type="number" id="footerSize" value="12" min="6" max="36">
       </div>
       <div class="form-row">
         <label>Renk</label>
-        <div class="color-row"><input type="color" id="studentColor" value="#1a1a1a"></div>
+        <div class="color-row"><input type="color" id="footerColor" value="#444444"></div>
       </div>
       <div class="form-row">
         <label>Stil</label>
         <div class="style-btns">
-          <button class="style-btn bold-btn active" id="studentBold" onclick="toggleStyle('studentBold')">K</button>
-          <button class="style-btn italic-btn" id="studentItalic" onclick="toggleStyle('studentItalic')">İ</button>
+          <button class="style-btn bold-btn" id="footerBold" onclick="toggleStyle('footerBold')">K</button>
+          <button class="style-btn italic-btn" id="footerItalic" onclick="toggleStyle('footerItalic')">İ</button>
         </div>
       </div>
     </div>
+    <div class="form-row">
+      <label>Hizalama</label>
+      <div class="style-btns">
+        <button class="style-btn active" id="footerAlignLeft" onclick="setFooterAlign('left')">← Sola</button>
+        <button class="style-btn" id="footerAlignCenter" onclick="setFooterAlign('center')">↔ Orta</button>
+        <button class="style-btn" id="footerAlignRight" onclick="setFooterAlign('right')">→ Sağa</button>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Alt boşluktan mesafe (mm)</label>
+      <input type="range" id="footerOffsetSlider" min="2" max="30" value="8" oninput="document.getElementById('footerOffsetVal').textContent=this.value+' mm'">
+      <div class="range-display" id="footerOffsetVal">8 mm</div>
+    </div>
     <hr class="section-divider">
 
+    <!-- 5.5 Diğer sayfaya geçiniz -->
+    <div class="form-row">
+      <div class="toggle-row">
+        <span>"Diğer sayfaya geçiniz…" ekle</span>
+        <label class="toggle">
+          <input type="checkbox" id="nextPageEnabled" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div id="nextPageOptions" style="margin-top:14px;">
+      <div class="inline-row">
+        <div class="form-row">
+          <label>Alt boşluktan mesafe (mm)</label>
+          <input type="range" id="nextPageOffsetSlider" min="2" max="30" value="8" oninput="document.getElementById('nextPageOffsetVal').textContent=this.value+' mm'">
+          <div class="range-display" id="nextPageOffsetVal">8 mm</div>
+        </div>
+        <div class="form-row">
+          <label>Yazı boyutu (pt)</label>
+          <input type="number" id="nextPageSize" value="9" min="6" max="20">
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Hizalama</label>
+        <div class="style-btns">
+          <button class="style-btn" id="nextPageAlignLeft" onclick="selectNextPageAlign('left')">← Sola</button>
+          <button class="style-btn" id="nextPageAlignCenter" onclick="selectNextPageAlign('center')">↔ Orta</button>
+          <button class="style-btn active" id="nextPageAlignRight" onclick="selectNextPageAlign('right')">→ Sağa</button>
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- 6. Arka plan -->
     <div class="form-row">
       <label>Arka plan rengi</label>
       <div class="color-row">
@@ -798,10 +884,24 @@
   </div>
 </div>
 
+<div style="text-align:center; padding: 12px 20px 40px;">
+  <button id="contactBtn"
+     style="display:inline-flex; align-items:center; gap:8px;
+            background:none; border:1px solid var(--border);
+            color:var(--muted); border-radius:10px;
+            padding:10px 20px; font-family:'DM Sans',sans-serif;
+            font-size:0.82rem; cursor:pointer;
+            transition:all 0.2s;"
+     onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
+     onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+    &#9993;&#65039; &Icirc;leti&#351;im
+  </button>
+</div>
+
 <script>
 const { jsPDF } = window.jspdf;
 
-let photos = []; // {id, file, dataUrl, name}
+let photos = [];
 let dragSrcIdx = null;
 
 function toggleThemeMenu() {
@@ -816,7 +916,6 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// Theme switcher
 function setTheme(cls, btn, name, color) {
   document.body.className = cls;
   document.querySelectorAll('.theme-menu-item').forEach(c => c.classList.remove('active'));
@@ -827,7 +926,6 @@ function setTheme(cls, btn, name, color) {
   localStorage.setItem('selectedTheme', JSON.stringify({ cls, name, color }));
 }
 
-// Kayıtlı temayı yükle
 (function() {
   try {
     const saved = JSON.parse(localStorage.getItem('selectedTheme'));
@@ -842,7 +940,6 @@ function setTheme(cls, btn, name, color) {
   } catch(e) {}
 })();
 
-// Orientation & columns
 let currentOrientation = 'portrait';
 let currentCols = 2;
 
@@ -859,7 +956,6 @@ function selectCols(n) {
   updateStats();
 }
 
-// Sliders
 document.getElementById('gapSlider').addEventListener('input', function() {
   document.getElementById('gapVal').textContent = this.value + ' mm';
   updateStats();
@@ -896,7 +992,6 @@ function toggleBorderOptions() {
   document.getElementById('borderOptions').style.pointerEvents = enabled ? '' : 'none';
 }
 
-// Açıklama Arşivi
 let descArchive = JSON.parse(localStorage.getItem('descArchive') || '[]');
 
 function archiveSaveDesc() {
@@ -936,7 +1031,6 @@ function renderDescArchive() {
 }
 renderDescArchive();
 
-// Başlık Arşivi
 let titleArchive = JSON.parse(localStorage.getItem('titleArchive') || '[]');
 
 function archiveSaveTitle() {
@@ -976,7 +1070,6 @@ function renderTitleArchive() {
 }
 renderTitleArchive();
 
-// Style toggle
 function toggleStyle(id) {
   const btn = document.getElementById(id);
   btn.classList.toggle('active');
@@ -986,7 +1079,6 @@ function isActive(id) {
   return document.getElementById(id).classList.contains('active');
 }
 
-// Label preview
 function setLabelAlign(align) {
   labelAlign = align;
   ['Left','Center','Right'].forEach(a => {
@@ -1013,16 +1105,116 @@ function updatePreview() {
 }
 updatePreview();
 
-// Kaydırınca "ücretsiz..." kaybolsun
+let nextPageAlign = 'right';
+
+function selectNextPageAlign(val) {
+  nextPageAlign = val;
+  ['Left','Center','Right'].forEach(a => {
+    const btn = document.getElementById('nextPageAlign' + a);
+    if (btn) btn.classList.toggle('active', a.toLowerCase() === val);
+  });
+}
+
+let titleAlign = 'center';
+
+function setTitleAlign(align) {
+  titleAlign = align;
+  ['Left','Center','Right'].forEach(a => {
+    const btn = document.getElementById('titleAlign' + a);
+    if (btn) btn.classList.toggle('active', a.toLowerCase() === align);
+  });
+}
+
+let descAlign = 'left';
+
+function setDescAlign(align) {
+  descAlign = align;
+  ['Left','Center','Right'].forEach(a => {
+    const btn = document.getElementById('descAlign' + a);
+    if (btn) btn.classList.toggle('active', a.toLowerCase() === align);
+  });
+}
+
+// Footer Arşivi
+let footerArchiveData = JSON.parse(localStorage.getItem('footerArchive') || '[]');
+
+function archiveSaveFooter() {
+  const val = document.getElementById('footerText').value.trim();
+  if (!val) return;
+  if (footerArchiveData.includes(val)) return;
+  footerArchiveData.unshift(val);
+  if (footerArchiveData.length > 10) footerArchiveData = footerArchiveData.slice(0, 10);
+  localStorage.setItem('footerArchive', JSON.stringify(footerArchiveData));
+  renderFooterArchive();
+}
+
+function archiveUseFooter(idx) {
+  document.getElementById('footerText').value = footerArchiveData[idx];
+  updateFooterPreview();
+}
+
+function archiveDeleteFooter(idx) {
+  footerArchiveData.splice(idx, 1);
+  localStorage.setItem('footerArchive', JSON.stringify(footerArchiveData));
+  renderFooterArchive();
+}
+
+function renderFooterArchive() {
+  const container = document.getElementById('footerArchive');
+  container.innerHTML = '';
+  if (footerArchiveData.length === 0) return;
+  footerArchiveData.forEach((t, idx) => {
+    const item = document.createElement('div');
+    item.className = 'archive-item';
+    item.innerHTML = `
+      <span class="archive-item-text" onclick="archiveUseFooter(${idx})" title="${t}">${t}</span>
+      <button class="archive-use-btn" onclick="archiveUseFooter(${idx})">Kullan</button>
+      <button class="archive-del-btn" onclick="archiveDeleteFooter(${idx})" title="Sil">✕</button>
+    `;
+    container.appendChild(item);
+  });
+}
+renderFooterArchive();
+
+// Footer (alt metin) fonksiyonları
+let footerAlign = 'left';
+
+function setFooterAlign(align) {
+  footerAlign = align;
+  ['Left','Center','Right'].forEach(a => {
+    const btn = document.getElementById('footerAlign' + a);
+    if (btn) btn.classList.toggle('active', a.toLowerCase() === align);
+  });
+  updateFooterPreview();
+}
+
+function updateFooterPreview() {
+  const preview = document.getElementById('footerPreview');
+  if (!preview) return;
+  const text = document.getElementById('footerText').value || 'Son sayfa açıklama metni';
+  const color = document.getElementById('footerColor').value;
+  const size = parseInt(document.getElementById('footerSize').value) || 12;
+  const bold = isActive('footerBold');
+  const italic = isActive('footerItalic');
+  preview.textContent = text;
+  preview.style.color = color;
+  preview.style.fontSize = Math.min(size * 1.2, 18) + 'px';
+  preview.style.fontWeight = bold ? '700' : '400';
+  preview.style.fontStyle = italic ? 'italic' : 'normal';
+  preview.style.textAlign = footerAlign;
+}
+
+document.getElementById('footerText').addEventListener('input', updateFooterPreview);
+document.getElementById('footerSize').addEventListener('input', updateFooterPreview);
+document.getElementById('footerColor').addEventListener('input', updateFooterPreview);
+
 window.addEventListener('scroll', () => {
   const el = document.getElementById('freeTextLabel');
   if (el) el.style.opacity = window.scrollY > 30 ? '0' : '0.5';
 });
 
-// File input
 document.getElementById('fileInput').addEventListener('change', e => handleFiles(e.target.files));
 
-// Drop zone
 const dropZone = document.getElementById('dropZone');
 dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
@@ -1032,7 +1224,6 @@ dropZone.addEventListener('drop', e => {
   handleFiles(e.dataTransfer.files);
 });
 
-// Fotoğrafı sıkıştır — kalite ayarına göre
 function compressImage(dataUrl) {
   return new Promise(resolve => {
     const quality = document.getElementById('uploadQuality')?.value || 'medium';
@@ -1065,7 +1256,6 @@ function handleFiles(fileList) {
   const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
   if (files.length === 0) return;
 
-  // Sırayla işle — ana thread'i kilitlemez
   async function processSequentially() {
     for (const file of files) {
       await new Promise(resolve => {
@@ -1073,12 +1263,11 @@ function handleFiles(fileList) {
         reader.onload = async e => {
           const compressed = await compressImage(e.target.result);
           photos.push({ id: Date.now() + Math.random(), file, dataUrl: compressed, name: file.name, points: 10 });
-          renderList(); // her fotoğraftan sonra güncelle
+          renderList();
           resolve();
         };
         reader.readAsDataURL(file);
       });
-      // Tarayıcıya nefes aldır
       await new Promise(r => setTimeout(r, 10));
     }
   }
@@ -1133,7 +1322,6 @@ function renderList() {
       </div>
       <button class="remove-btn" onclick="removePhoto(${idx})" title="Sil">✕</button>
     `;
-    // Sürükle-bırak (masaüstü için)
     item.addEventListener('dragstart', e => { dragSrcIdx = idx; item.classList.add('dragging'); });
     item.addEventListener('dragend', () => { item.classList.remove('dragging'); document.querySelectorAll('.photo-item').forEach(t => t.classList.remove('drag-target')); });
     item.addEventListener('dragover', e => { e.preventDefault(); item.classList.add('drag-target'); });
@@ -1170,7 +1358,6 @@ function removePhoto(idx) {
   renderList();
 }
 
-// Re-render list when start question number changes
 document.getElementById('startQuestion').addEventListener('input', () => { if(photos.length) renderList(); });
 
 function updateStats() {
@@ -1188,7 +1375,6 @@ function updateStats() {
   document.getElementById('pageCount').textContent = '~' + pages;
 }
 
-// PDF Generation
 document.getElementById('generateBtn').addEventListener('click', generatePDF);
 
 async function generatePDF() {
@@ -1198,32 +1384,23 @@ async function generatePDF() {
   const margin = parseFloat(document.getElementById('marginSlider').value);
   const bgColorHex = document.getElementById('bgColor').value;
 
-  // Title style
   const titleColorHex = document.getElementById('titleColor').value;
   const titleSize = parseInt(document.getElementById('titleSize').value) || 22;
   const titleBold = isActive('titleBold');
   const titleItalic = isActive('titleItalic');
-  const titleStyle = (titleBold && titleItalic) ? 'bolditalic' : titleBold ? 'bold' : titleItalic ? 'italic' : 'normal';
 
-  // Desc style
   const descColorHex = document.getElementById('descColor').value;
   const descSize = parseInt(document.getElementById('descSize').value) || 10;
   const descBold = isActive('descBold');
   const descItalic = isActive('descItalic');
-  const descStyle = (descBold && descItalic) ? 'bolditalic' : descBold ? 'bold' : descItalic ? 'italic' : 'normal';
 
-  // Label style
   const labelEnabled = document.getElementById('labelEnabled').checked;
   const startQuestion = parseInt(document.getElementById('startQuestion').value) || 1;
   const labelColorHex = document.getElementById('labelColor').value;
   const labelFontSize = parseInt(document.getElementById('labelSize').value) || 9;
   const labelBold = isActive('labelBold');
   const labelItalic = isActive('labelItalic');
-  const labelStyle = (labelBold && labelItalic) ? 'bolditalic' : labelBold ? 'bold' : labelItalic ? 'italic' : 'normal';
 
-  const labelR = parseInt(labelColorHex.slice(1,3),16);
-  const labelG = parseInt(labelColorHex.slice(3,5),16);
-  const labelB = parseInt(labelColorHex.slice(5,7),16);
   const labelLineH = labelFontSize * 0.352778 + 2;
 
   const btn = document.getElementById('generateBtn');
@@ -1234,27 +1411,18 @@ async function generatePDF() {
   btn.disabled = true;
   progressWrap.style.display = 'block';
 
-  // Page dimensions based on orientation
   const isLandscape = currentOrientation === 'landscape';
   const pageW = isLandscape ? 297 : 210;
   const pageH = isLandscape ? 210 : 297;
   const numCols = currentCols;
   const colW = (pageW - margin * 2 - gap * (numCols - 1)) / numCols;
 
-  // Parse colors
   const bgR = parseInt(bgColorHex.slice(1,3),16);
   const bgG = parseInt(bgColorHex.slice(3,5),16);
   const bgB = parseInt(bgColorHex.slice(5,7),16);
-  const titleR = parseInt(titleColorHex.slice(1,3),16);
-  const titleG = parseInt(titleColorHex.slice(3,5),16);
-  const titleB = parseInt(titleColorHex.slice(5,7),16);
-  const descR = parseInt(descColorHex.slice(1,3),16);
-  const descG = parseInt(descColorHex.slice(3,5),16);
-  const descB = parseInt(descColorHex.slice(5,7),16);
 
   const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: currentOrientation });
 
-  // Border settings
   const borderEnabled = document.getElementById('borderEnabled').checked;
   const borderWidth = parseFloat(document.getElementById('borderWidth').value) || 1;
   const borderColorHex2 = document.getElementById('borderColor').value;
@@ -1265,24 +1433,18 @@ async function generatePDF() {
   const bG = parseInt(borderColorHex2.slice(3,5),16);
   const bB = parseInt(borderColorHex2.slice(5,7),16);
 
-  // Yuvarlatılmış dikdörtgen çiz
   function drawRoundedRect(x, y, w, h, r) {
     r = Math.min(r, w/2, h/2);
     pdf.setDrawColor(bR, bG, bB);
     pdf.setLineWidth(borderWidth * 0.352778);
-    // jsPDF 2.x rounded rect
     pdf.roundedRect(x, y, w, h, r, r, 'S');
   }
 
-  const pdf2 = pdf; // alias for clarity
-
-  // Canvas ile metin çiz → PNG → PDF'e ekle (tam Türkçe karakter desteği)
   const DPI = 300;
   const MM_TO_PX = DPI / 25.4;
 
   function mmToPx(mm) { return Math.round(mm * MM_TO_PX); }
 
-  // Metin bloğunu canvas'a çizip PDF'e PNG olarak ekle
   function drawTextBlock(text, xMm, yMm, fontSizePt, color, bold, italic, maxWidthMm, align) {
     if (!text || !text.trim()) return 0;
     const canvas = document.createElement('canvas');
@@ -1292,7 +1454,6 @@ async function generatePDF() {
     const fontStr = `${italic?'italic ':''} ${bold?'bold ':''} ${fontPx}px Arial, sans-serif`;
     ctx.font = fontStr;
 
-    // Önce \n ile bölünmüş paragrafları al, sonra her birini word-wrap yap
     const paragraphs = text.split('\n');
     const lines = [];
     for (const para of paragraphs) {
@@ -1318,8 +1479,14 @@ async function generatePDF() {
     ctx.font = fontStr;
     ctx.fillStyle = color;
     ctx.textBaseline = 'top';
-    ctx.textAlign = align === 'center' ? 'center' : 'left';
-    const textX = align === 'center' ? maxPx / 2 : 0;
+    if (align === 'center') {
+      ctx.textAlign = 'center';
+    } else if (align === 'right') {
+      ctx.textAlign = 'right';
+    } else {
+      ctx.textAlign = 'left';
+    }
+    const textX = align === 'center' ? maxPx / 2 : align === 'right' ? maxPx : 0;
     lines.forEach((line, i) => {
       ctx.fillText(line, textX, i * lineHeightPx + 2);
     });
@@ -1330,7 +1497,6 @@ async function generatePDF() {
     return hMm;
   }
 
-  // Tek satır metin çiz, gerçek genişliği döndür (mm)
   function drawTextLine(text, xMm, yMm, fontSizePt, color, bold, italic) {
     if (!text || !text.trim()) return 0;
     const canvas = document.createElement('canvas');
@@ -1361,12 +1527,11 @@ async function generatePDF() {
   }
 
   let isFirstPage = true;
-
   const headerPadding = 4;
 
   function getStudentLineH() {
     const fs = parseInt(document.getElementById('studentSize').value) || 10;
-    return fs * 0.352778 * 1.2; // pt to mm, slight leading
+    return fs * 0.352778 * 1.2;
   }
 
   function drawBackground() {
@@ -1380,13 +1545,11 @@ async function generatePDF() {
     const titleColor = hexToRgbStr(titleColorHex);
     const descColor = hexToRgbStr(descColorHex);
 
-    // Başlık — ortalı
     if (title) {
-      const h = drawTextBlock(title, margin, y, titleSize, titleColor, titleBold, titleItalic, usableW, 'center');
+      const h = drawTextBlock(title, margin, y, titleSize, titleColor, titleBold, titleItalic, usableW, titleAlign);
       y += h + headerPadding;
     }
 
-    // AD SOYAD / SINIF / NO satırı — üst ve alt çizgi, ayarlanabilir boşluk
     {
       const fs = parseInt(document.getElementById('studentSize').value) || 10;
       const studentColor = hexToRgbStr(document.getElementById('studentColor').value);
@@ -1397,7 +1560,6 @@ async function generatePDF() {
       const pad = 0;
       const studentLineH = getStudentLineH();
 
-      // Üst çizgi
       pdf.setDrawColor(160,160,160);
       pdf.setLineWidth(0.25);
       pdf.line(margin, y, margin + usableW, y);
@@ -1410,7 +1572,6 @@ async function generatePDF() {
 
       y += studentLineH;
 
-      // Alt çizgi
       pdf.setDrawColor(160,160,160);
       pdf.setLineWidth(0.25);
       pdf.line(margin, y, margin + usableW, y);
@@ -1418,16 +1579,15 @@ async function generatePDF() {
       y += pad + 0.5;
     }
 
-    // Açıklama — sola hizalı, ad soyad altında
     if (desc) {
-      const h = drawTextBlock(desc, margin, y, descSize, descColor, descBold, descItalic, usableW, 'left');
+      const descColor2 = hexToRgbStr(descColorHex);
+      const h = drawTextBlock(desc, margin, y, descSize, descColor2, descBold, descItalic, usableW, descAlign);
       y += h + 1;
     }
 
     return y + 1;
   }
 
-  // Start first page
   drawBackground();
   let startY = margin;
   if (isFirstPage) {
@@ -1435,28 +1595,18 @@ async function generatePDF() {
     isFirstPage = false;
   }
 
-  // Column cursors — one per column
   let colY = Array(numCols).fill(startY);
   let col = 0;
 
-  // Sayfaya sığdır modu: fotoğraf yüksekliğini hesapla
   const fitEnabled = document.getElementById('fitPagesEnabled').checked;
   let fixedImgH = null;
   if (fitEnabled && photos.length > 0) {
     const targetPages = fitPagesTarget;
     const usablePageH = pageH - margin;
     const firstPageH = usablePageH - startY;
-    const otherPageH = usablePageH - margin;
-    // Toplam sütun slotu
-    const firstPageSlots = numCols;
-    const otherPageSlots = numCols * (targetPages - 1);
-    const totalSlots = firstPageSlots + otherPageSlots;
-    const photosPerSlot = Math.ceil(photos.length / totalSlots);
-    // İlk sayfada her sütuna kaç fotoğraf düşer
     const photosPerCol = Math.ceil(photos.length / (numCols * targetPages));
     const labelH = labelEnabled ? labelLineH : 0;
     const padV = borderEnabled ? borderPadV : 0;
-    // Kullanılabilir yükseklik / fotoğraf başına düşen alan
     const availH = (firstPageH - gap * (photosPerCol - 1)) / photosPerCol;
     fixedImgH = availH - labelH - padV * 2;
     if (fixedImgH < 5) fixedImgH = 5;
@@ -1476,10 +1626,8 @@ async function generatePDF() {
 
     let imgW, imgH;
     if (fixedImgH !== null) {
-      // Sayfaya sığdır modu: yüksekliğe göre genişliği orana göre hesapla
       imgH = fixedImgH;
       imgW = imgH / ratio;
-      // Sütun genişliğini aşıyorsa sütuna sığdır
       if (imgW > maxImgW) {
         imgW = maxImgW;
         imgH = imgW * ratio;
@@ -1494,11 +1642,19 @@ async function generatePDF() {
 
     const usableH = pageH - margin;
 
-    // Mevcut sütuna sığmıyorsa sonraki sütuna geç
     while (colY[col] + totalBlockH > usableH) {
       col++;
       if (col >= numCols) {
-        // Tüm sütunlar doldu, yeni sayfa
+        // "Diğer sayfaya geçiniz..." — sağ alt köşeye
+        if (document.getElementById('nextPageEnabled').checked) {
+          const npSize = parseInt(document.getElementById('nextPageSize').value) || 9;
+          const npOffset = parseFloat(document.getElementById('nextPageOffsetSlider').value) || 8;
+          const npText = 'Diğer sayfaya geçiniz…';
+          const npColor = 'rgb(80,80,80)';
+          const npLineH = npSize * 0.352778 * 1.4;
+          const npY = pageH - margin - npOffset - npLineH;
+          drawTextBlock(npText, margin, npY, npSize, npColor, false, true, pageW - margin * 2, nextPageAlign);
+        }
         pdf.addPage();
         drawBackground();
         colY = Array(numCols).fill(margin);
@@ -1510,12 +1666,10 @@ async function generatePDF() {
     const xPos = margin + col * (colW + gap);
     let yPos = colY[col];
 
-    // Hizalama ofseti (sadece fotoğraf için, çerçeve sütun genişliğinde sabit)
     let alignOffsetX = 0;
     if (photoAlign === 'center') alignOffsetX = (colW - imgW - padH * 2) / 2;
     else if (photoAlign === 'right') alignOffsetX = colW - imgW - padH * 2;
 
-    // Yuvarlatılmış çerçeve — her zaman tam sütun genişliğinde
     if (borderEnabled) {
       drawRoundedRect(xPos, yPos, colW, totalBlockH, borderRadius);
     }
@@ -1523,17 +1677,13 @@ async function generatePDF() {
     yPos += padV;
     const imgX = xPos + padH + alignOffsetX;
 
-    // Draw label
     if (labelEnabled) {
       const qNum = startQuestion + i;
       const pts = photo.points ?? 0;
       const labelText = `SORU ${qNum}   (${pts} Puan)`;
       const labelColor = hexToRgbStr(labelColorHex);
-      let labelX = xPos + padH;
-      if (labelAlign === 'center') labelX = xPos + colW / 2;
-      else if (labelAlign === 'right') labelX = xPos + colW - padH;
       const labelTextAlign = labelAlign === 'center' ? 'center' : labelAlign === 'right' ? 'right' : 'left';
-      drawTextBlock(labelText, labelX, yPos, labelFontSize, labelColor, labelBold, labelItalic, colW - padH * 2, labelTextAlign);
+      drawTextBlock(labelText, xPos + padH, yPos, labelFontSize, labelColor, labelBold, labelItalic, colW - padH * 2, labelTextAlign);
       yPos += labelLineH;
     }
 
@@ -1545,7 +1695,21 @@ async function generatePDF() {
     }
 
     colY[col] += totalBlockH + gap;
-    // Aynı sütunda kalmaya devam et, dolunca yukarıdaki while halleder
+  }
+
+  // Son sayfaya alt metin (footer) ekle
+  const footerText = document.getElementById('footerText').value.trim();
+  if (footerText) {
+    const footerFontSize = parseInt(document.getElementById('footerSize').value) || 10;
+    const footerColorHex = document.getElementById('footerColor').value;
+    const footerBoldOn = isActive('footerBold');
+    const footerItalicOn = isActive('footerItalic');
+    const footerColorStr = hexToRgbStr(footerColorHex);
+    const usableW = pageW - margin * 2;
+    const footerLineH = footerFontSize * 0.352778 * 1.4;
+    const footerOffset = parseFloat(document.getElementById('footerOffsetSlider').value) || 8;
+    const footerY = pageH - margin - footerOffset - footerLineH;
+    drawTextBlock(footerText, margin, footerY, footerFontSize, footerColorStr, footerBoldOn, footerItalicOn, usableW, footerAlign);
   }
 
   progressFill.style.width = '100%';
@@ -1555,7 +1719,6 @@ async function generatePDF() {
   const pdfBlob = pdf.output('blob');
   const blobUrl = URL.createObjectURL(pdfBlob);
 
-  // Mevcut sayfada overlay göster
   const overlay = document.createElement('div');
   overlay.id = 'pdfOverlay';
   overlay.style.cssText = `
@@ -1595,6 +1758,14 @@ function getImageFormat(dataUrl) {
   if (dataUrl.includes('data:image/webp')) return 'WEBP';
   return 'JPEG';
 }
+
+// İletişim butonu — parçalı yapı Cloudflare encode'undan kaçınır
+document.getElementById('contactBtn').addEventListener('click', function() {
+  const u = 'xnttv52w8f';
+  const d = 'privaterelay.appleid.com';
+  const s = 'H\u0131zl\u0131S\u0131nav talep/fikir';
+  window.location.href = 'mailto:' + u + '@' + d + '?subject=' + encodeURIComponent(s);
+});
 </script>
 </body>
 </html>
