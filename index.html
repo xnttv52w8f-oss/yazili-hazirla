@@ -514,13 +514,20 @@
       <p style="margin-top:6px; font-size:0.8rem;">JPG, PNG, WEBP — Birden fazla seçebilirsiniz</p>
     </div>
 
+    <div id="totalPointsBanner" style="display:none; margin-bottom:8px; padding:8px 14px; border-radius:8px; font-size:0.85rem; font-weight:600; background:var(--surface2); transition:all 0.2s;">
+      <span id="totalPointsSpan">🎯 Toplam puan: <strong id="totalPoints">0</strong></span>
+    </div>
     <div id="photoList" class="photo-list"></div>
 
-    <div id="statsBar" class="stats-bar" style="display:none;">
-      <span>📋 <strong id="photoCount">0</strong> soru</span>
-      <span>📄 Tahminen <strong id="pageCount">~</strong> sayfa</span>
-      <button onclick="shufflePhotos()" style="margin-left:auto; background:none; border:1px solid var(--border); color:var(--text); border-radius:6px; padding:3px 9px; font-size:0.72rem; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🔀 Karıştır</button>
-      <button onclick="clearAllPhotos()" style="background:none; border:1px solid var(--border); color:var(--text); border-radius:6px; padding:3px 9px; font-size:0.72rem; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s;" onmouseover="this.style.borderColor='#e05555';this.style.color='#e05555'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🗑 Tümünü Sil</button>
+    <div id="statsBar" class="stats-bar" style="display:none; flex-direction:column; gap:10px;">
+      <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+        <span>📋 <strong id="photoCount">0</strong> soru</span>
+        <span>📄 Tahminen <strong id="pageCount">~</strong> sayfa</span>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button onclick="shufflePhotos()" style="flex:1; background:none; border:1px solid var(--border); color:var(--text); border-radius:6px; padding:5px 10px; font-size:0.75rem; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; white-space:nowrap;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🔀 Karıştır</button>
+        <button onclick="clearAllPhotos()" style="flex:1; background:none; border:1px solid var(--border); color:var(--text); border-radius:6px; padding:5px 10px; font-size:0.75rem; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; white-space:nowrap;" onmouseover="this.style.borderColor='#e05555';this.style.color='#e05555'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">🗑 Tümünü Sil</button>
+      </div>
     </div>
   </div>
 
@@ -740,43 +747,8 @@
       </div>
       <div class="form-row">
         <label>Sayfa kenar boşluğu (mm)</label>
-        <input type="range" id="marginSlider" min="5" max="30" value="5">
-        <div class="range-display" id="marginVal">5 mm</div>
-      </div>
-    </div>
-    <div class="form-row" style="margin-top:12px;">
-      <label>Soru hizalama (sütun içinde)</label>
-      <div class="style-btns">
-        <button class="style-btn active" id="alignLeft" onclick="selectAlign('left')">← Sola</button>
-        <button class="style-btn" id="alignCenter" onclick="selectAlign('center')">↔ Ortala</button>
-        <button class="style-btn" id="alignRight" onclick="selectAlign('right')">→ Sağa</button>
-      </div>
-    </div>
-
-    <hr class="section-divider">
-
-    <div class="form-row">
-      <div class="toggle-row">
-        <span>Soruları belirli sayıda sayfaya sığdır</span>
-        <label class="toggle">
-          <input type="checkbox" id="fitPagesEnabled" onchange="toggleFitPages()">
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-    </div>
-    <div id="fitPagesOptions" style="opacity:0.4; pointer-events:none; margin-top:12px;">
-      <div class="form-row">
-        <label>Hedef sayfa sayısı</label>
-        <div class="style-btns">
-          <button class="style-btn" id="fitPage1" onclick="selectFitPages(1)">1</button>
-          <button class="style-btn active" id="fitPage2" onclick="selectFitPages(2)">2</button>
-          <button class="style-btn" id="fitPage3" onclick="selectFitPages(3)">3</button>
-          <button class="style-btn" id="fitPage4" onclick="selectFitPages(4)">4</button>
-          <button class="style-btn" id="fitPage5" onclick="selectFitPages(5)">5</button>
-          <button class="style-btn" id="fitPage6" onclick="selectFitPages(6)">6</button>
-          <button class="style-btn" id="fitPage7" onclick="selectFitPages(7)">7</button>
-          <button class="style-btn" id="fitPage8" onclick="selectFitPages(8)">8</button>
-        </div>
+        <input type="range" id="marginSlider" min="5" max="30" value="8">
+        <div class="range-display" id="marginVal">8 mm</div>
       </div>
     </div>
   </div>
@@ -825,6 +797,46 @@
       </div>
       <div class="label-preview" id="labelPreview" style="margin-top:12px;">SORU 1 &nbsp;&nbsp;(10 Puan)</div>
       <div style="font-size:0.82rem; color:var(--muted); margin-top:8px;">Her soru için puan, soru listesinde ayrı ayrı girilecek.</div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- Soru hizalama -->
+    <div class="form-row">
+      <label>Soru hizalama (sütun içinde)</label>
+      <div class="style-btns">
+        <button class="style-btn active" id="alignLeft" onclick="selectAlign('left')">← Sola</button>
+        <button class="style-btn" id="alignCenter" onclick="selectAlign('center')">↔ Ortala</button>
+        <button class="style-btn" id="alignRight" onclick="selectAlign('right')">→ Sağa</button>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- Sayfaya sığdır -->
+    <div class="form-row">
+      <div class="toggle-row">
+        <span>Soruları belirli sayıda sayfaya sığdır</span>
+        <label class="toggle">
+          <input type="checkbox" id="fitPagesEnabled" onchange="toggleFitPages()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div id="fitPagesOptions" style="opacity:0.4; pointer-events:none; margin-top:12px;">
+      <div class="form-row">
+        <label>Hedef sayfa sayısı</label>
+        <div class="style-btns">
+          <button class="style-btn" id="fitPage1" onclick="selectFitPages(1)">1</button>
+          <button class="style-btn active" id="fitPage2" onclick="selectFitPages(2)">2</button>
+          <button class="style-btn" id="fitPage3" onclick="selectFitPages(3)">3</button>
+          <button class="style-btn" id="fitPage4" onclick="selectFitPages(4)">4</button>
+          <button class="style-btn" id="fitPage5" onclick="selectFitPages(5)">5</button>
+          <button class="style-btn" id="fitPage6" onclick="selectFitPages(6)">6</button>
+          <button class="style-btn" id="fitPage7" onclick="selectFitPages(7)">7</button>
+          <button class="style-btn" id="fitPage8" onclick="selectFitPages(8)">8</button>
+        </div>
+      </div>
     </div>
 
     <hr class="section-divider">
@@ -1351,6 +1363,7 @@ function renderList() {
 
 function updatePoints(idx, val) {
   photos[idx].points = parseInt(val) || 0;
+  updateStats();
 }
 
 function removePhoto(idx) {
@@ -1373,6 +1386,35 @@ function updateStats() {
   const perPage = Math.floor(usableH / (avgH + gap)) * currentCols;
   const pages = Math.max(1, Math.ceil(photos.length / Math.max(1, perPage)));
   document.getElementById('pageCount').textContent = '~' + pages;
+
+  const total = photos.reduce((sum, p) => sum + (parseFloat(p.points) || 0), 0);
+  const totalEl = document.getElementById('totalPoints');
+  const spanEl = document.getElementById('totalPointsSpan');
+  const bannerEl = document.getElementById('totalPointsBanner');
+  totalEl.textContent = total;
+
+  if (photos.length === 0) {
+    bannerEl.style.display = 'none';
+  } else {
+    bannerEl.style.display = 'block';
+    if (total === 100) {
+      bannerEl.style.background = 'rgba(34,167,82,0.12)';
+      bannerEl.style.color = '#22a752';
+      spanEl.innerHTML = '✅ Toplam puan: <strong id="totalPoints">' + total + '</strong> — Tam 100!';
+    } else if (total > 100) {
+      bannerEl.style.background = 'rgba(224,85,85,0.12)';
+      bannerEl.style.color = '#e05555';
+      spanEl.innerHTML = '⚠️ Toplam puan: <strong id="totalPoints">' + total + '</strong> — 100\'den fazla!';
+    } else if (total === 0) {
+      bannerEl.style.background = 'var(--surface2)';
+      bannerEl.style.color = 'var(--muted)';
+      spanEl.innerHTML = '🎯 Toplam puan: <strong id="totalPoints">0</strong>';
+    } else {
+      bannerEl.style.background = 'rgba(224,140,0,0.10)';
+      bannerEl.style.color = '#e08c00';
+      spanEl.innerHTML = '🎯 Toplam puan: <strong id="totalPoints">' + total + '</strong> — 100\'e ulaşılmadı';
+    }
+  }
 }
 
 document.getElementById('generateBtn').addEventListener('click', generatePDF);
